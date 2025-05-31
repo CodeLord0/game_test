@@ -9,26 +9,27 @@ public class Player : Area2D
 	[Export] // makes speed visible in the editor
 	int Speed; //declares speed for the player
 
-	//[Signal]
+	[Signal]
 	
-	//public delegate void hurt();
+	public delegate void hurt();
 
-	// [Signal]
-	// public delegate void pickup();
+	[Signal]
+	public delegate void pickup();
 	
 	Vector2 Velocity; // declares the 
-	Vector2 ScreenSize; // variable containing the width of the game window
+	//Vector2 ScreenSize; // variable containing the width of the game window
 	Vector2 pos; // position of the player
 	
 	AnimatedSprite anim; // holds the current animation of the player
-	
+	Vector2 ScreenSize ;
 	
 		// runs once at the start of the game
 	public override void _Ready()
 	{
-
+		ScreenSize.x = 480;
+		ScreenSize.y = 720;
 		pos = Position; // assigns the Position of th
-		ScreenSize = GetViewport().GetVisibleRect().Size; // holds the width and height of the screen
+		 // holds the width and height of the screen
 		anim = GetNode<AnimatedSprite>("AnimatedSprite"); // gets the AnimatedSprite node
 	}
 
@@ -93,40 +94,40 @@ public class Player : Area2D
 		if (Velocity.Length() > 0) { // if the player is moving
 			Velocity = Velocity.Normalized() * Speed; // normalize the vector
 		}
+	 }
+
+	void Start(Vector2 pos)
+	{
+		SetProcess(true);
+		Position = pos;
+		anim.Animation = "run";
 	}
 
-	// void Start(Vector2 pos)
-	// {
-	// 	SetProcess(true);
-	// 	Position = pos;
-	// 	anim.Animation = "run";
-	// }
+	void Die()
+	{
+		anim.Animation = "hurt";
+		SetProcess(false);
+	}
 
-	// void Die()
-	// {
-	// 	anim.Animation = "hurt";
-	// 	SetProcess(false);
-	// }
+	void _on_Player_area_entered(Area2D area)
+	{
+		GD.Print("colission");
+		if (area.IsInGroup("coins"))
+		{
 
-	// void _on_Player_area_entered(Area2D area)
-	// {
-	// 	GD.Print("colission");
-	// 	if (area.IsInGroup("coins"))
-	// 	{
+			EmitSignal(nameof(pickup));
+		}
 
-	// 		EmitSignal(nameof(pickup));
-	// 	}
+		if (area.IsInGroup("obstacles"))
+		{
+			EmitSignal(nameof(hurt));
+			Die();
 
-	// 	if (area.IsInGroup("obstacles"))
-	// 	{
-	// 		EmitSignal(nameof(hurt));
-	// 		Die();
-
-	// 	}
+	 	}
 			
 
 				
-	// }
+	 }
 	
 		
 
